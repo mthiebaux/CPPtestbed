@@ -1,0 +1,41 @@
+
+https://cmake.org/cmake/help/latest/guide/tutorial/index.html
+
+	CMake Tutorial
+
+	> mkdir build
+	> cd build
+
+  A:
+	> cmake ../src
+	> cmake --build .
+	> cmake --install . --prefix "../install"
+
+  B:
+	> cmake ../src -DCMAKE_INSTALL_PREFIX=../install
+	> cmake --build . --target install
+
+
+https://cmake.org/cmake/help/latest/guide/user-interaction/index.html
+
+	cd some_software-1.4.2
+	$ mkdir build
+	$ cd build
+	$ cmake .. -DCMAKE_INSTALL_PREFIX=/opt/the/prefix
+	$ cmake --build .
+	$ cmake --build . --target install
+
+
+https://ma.ttias.be/mac-os-xcrun-error-invalid-active-developer-path-missing-xcrun/
+
+	- Run Build Command(s):/usr/bin/make -f Makefile cmTC_c3ad6/fast && xcrun:
+		error: invalid active developer path (/Library/Developer/CommandLineTools),
+		missing xcrun at: /Library/Developer/CommandLineTools/usr/bin/xcrun
+
+	> xcode-select --install
+
+Clean:
+
+	> cmake --build . --target clean
+
+	> cmake --build . --clean-first
