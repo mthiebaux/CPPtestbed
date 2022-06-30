@@ -1,4 +1,3 @@
-#include <unistd.h> // for sleep
 #include <cstdio>	// for printf
 #include <iostream> // cin/cout
 
@@ -76,7 +75,8 @@ void test_console_executor( void )	{
 
 	while( console.quit() == false )	{
 
-		usleep( 10000 ); // microseconds
+//		usleep( 10000 ); // microseconds
+		this_thread::sleep_for( chrono::milliseconds( 10 ) );
 
 		if( console.command() )	{
 
