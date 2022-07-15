@@ -8,6 +8,7 @@
 
 #include "algos.h"
 #include "tree.h"
+#include "graph.h"
 
 using namespace std;
 
@@ -95,6 +96,8 @@ int main( int argc, char *argv[] ) {
 	cout << "argc == " << argc << endl;
 	std::printf( "argc == %d\n", argc );
 
+	test_console_executor();
+
 	test_icecream_parlor();
 
 	test_algorithms();
@@ -102,7 +105,7 @@ int main( int argc, char *argv[] ) {
 	test_tree_algorithms();
 */
 
-	test_console_executor();
+	test_graph_algorithms();
 
 	return( EXIT_SUCCESS );
 }

@@ -4,11 +4,11 @@
 
 #include <iostream>
 #include <string>
-#include <algorithm>
+//#include <algorithm>
 #include <map>
 #include <unordered_map>
-#include <set>
-#include <unordered_set>
+//#include <set>
+//#include <unordered_set>
 #include <queue>
 #include <stack>
 #include <array>
@@ -22,23 +22,24 @@ using namespace std;
 
 /////////////////////////////////////////////////////////////
 
-class node	{
+class Node	{
 
 	public:
-		node( int id )	{
+		Node( int id )	{
 			identity = id;
 			root_identity = id; // init to self
 			visited = false;
 		}
-		~node()	{
+		~Node()	{
 		}
+
 		// pass by value or reference: see #6: https://www.py4u.net/discuss/64291
-		void connect( const shared_ptr< node >& snp )	{ // faster
+		void connect( const shared_ptr< Node >& snp )	{ // faster
 			if( snp->identity != identity )	{ // self check, no err?
 				edge_list.push_front( snp );
 			}
 		}
-		void disconnect( const shared_ptr< node >& rem )	{
+		void disconnect( const shared_ptr< Node >& rem )	{
 
 			for( auto& np: edge_list )	{
 				if( np == rem )	{
@@ -59,59 +60,18 @@ class node	{
 			}
 			return( false );
 		}
-#if 0
-		bool path_connected( int id, int & root_id )	{
-
-			if( root_id == root_identity ) // same root group
-				return( true );
-			if( id == identity ) // self check, no err
-				return( true );
-			visited = true;
-
-			for( auto& snp: edge_list )	{
-				if( snp->path_connected( id, root_id ) )	{
-
-					// if( id == root_identity )
-					//   return( root_id )
-
-					if( root_id != root_identity )	{
-						cout << "JOIN: " << root_identity << " -> " << root_id << endl;
-					}
-
-					return( true );
-				}
-			}
-			return( false );
-		}
-#endif
-#if 0
-		bool path_connected( int id )	{ // recursion: DFS with system stack
-
-			if( id == identity ) // self check, no err
-				return( true );
-			if( visited )
-				return( false );
-			visited = true;
-
-			for( auto& snp: edge_list )	{
-				if( snp->path_connected( id ) )	{
-					return( true );
-				}
-			}
-			return( false );
-		}
-#endif
 
 		int identity;
 		int root_identity; // connectivity id
 		bool visited;
-		forward_list< const shared_ptr< node > > edge_list;
+		forward_list< const shared_ptr< Node > > edge_list;
 };
 
 /////////////////////////////////////////////////////////////
 
 // Undirected Cyclic Graph
 
+// class UndirectedGraph
 class graph	{
 
 	public:
@@ -119,7 +79,7 @@ class graph	{
 		}
 		~graph()	{
 		}
-		bool insert( node* new_node_p )	{
+		bool insert( Node* new_node_p )	{
 
 			if( node_map.count( new_node_p->identity ) != 0 )	{ // duplicate insertion check/err
 				cout << "graph::insert( " << new_node_p->identity << " ) DUPLICATE" << endl;
@@ -127,9 +87,12 @@ class graph	{
 				return( false );
 			}
 
-			node_map.insert( make_pair( new_node_p->identity, shared_ptr< node >( new_node_p ) ) );
+			node_map.insert( make_pair( new_node_p->identity, shared_ptr< Node >( new_node_p ) ) );
 //			node_map.insert( make_pair( new_node_p->identity, node_map[ new_node_p->identity ] ) ); // not shared
 			return( true );
+		}
+		bool insert( int id )	{
+			return( insert( new Node( id ) ) );
 		}
 		void connect( int a, int b )	{
 
@@ -152,7 +115,7 @@ class graph	{
 			}
 		}
 #if 1
-		int find_root( node* node_p )	{
+		int find_root( Node* node_p )	{
 
 			if( node_p->root_identity == node_p->identity )	{
 				return( node_p->root_identity );
@@ -171,23 +134,19 @@ class graph	{
 				np.second->visited = false;
 			}
 		}
-#if 0
-		bool connected( int a, int b )	{ // recursion: DFS with system stack
-			reset_visits();
-			return( node_map[ a ]->path_connected( b ) );
-		}
-#elif 1
+
+#if 1
 		bool connected( int a, int b )	{ // iteration: DFS with std::stack
 
 			reset_visits();
-			stack< node* > dfs_stack;
+			stack< Node* > dfs_stack;
 			dfs_stack.push( node_map[ a ].get() ); // use raw pointers locally
 
-			node* target_node_p = node_map[ b ].get();
+			Node* target_node_p = node_map[ b ].get();
 
 			while( ! dfs_stack.empty() )	{
 
-				node* node_p = dfs_stack.top();
+				Node* node_p = dfs_stack.top();
 				dfs_stack.pop();
 
 				if( node_p->identity == target_node_p->identity )
@@ -208,14 +167,14 @@ class graph	{
 		bool connected( int a, int b )	{ // iteration: BFS with std::list OR std::queue
 
 			reset_visits();
-			list< node* > bfs_list;
+			list< Node* > bfs_list;
 			bfs_list.push_back( node_map[ a ].get() );
 
-			node* target_node_p = node_map[ b ].get();
+			Node* target_node_p = node_map[ b ].get();
 
 			while( ! bfs_list.empty() )	{
 
-				node* node_p = bfs_list.front();
+				Node* node_p = bfs_list.front();
 				bfs_list.pop_front();
 
 				if( node_p->identity == target_node_p->identity )
@@ -235,7 +194,7 @@ class graph	{
 #endif
 		void remove( int id )	{
 
-			shared_ptr< node > remp = node_map[ id ];
+			shared_ptr< Node > remp = node_map[ id ];
 			for( auto& np: node_map )	{
 
 				remp->disconnect( np.second );
@@ -255,7 +214,7 @@ class graph	{
 
 			for( auto& np: node_map )	{
 
-				cout << "node [" << alphanumeric_filter( np.second->identity ) << "]";
+				cout << "Node [" << alphanumeric_filter( np.second->identity ) << "]";
 				if( np.second->identity == np.second->root_identity )	{
 					if( np.second->edge_list.empty() )
 						cout << " - ";
@@ -326,10 +285,10 @@ class graph	{
 		}
 
 #if 1
-		map< int, shared_ptr< node > > // ordered for print out
+		map< int, shared_ptr< Node > > // ordered for print out
 			node_map; // Fast range iter. Slow [key]. Search, removal, insertion: logarithmic complexity.
 #else
-		unordered_map< int, shared_ptr< node > >
+		unordered_map< int, shared_ptr< Node > >
 			node_map; // Slow range iter. Fast [key]. Search, removal, insertion: average constant-time complexity.
 #endif
 };
@@ -353,7 +312,8 @@ void test_graph_node_perf( int size, double prob, int reps = -1, bool print_out 
 	graph G;
 	vector< int > id_vec; // This is the id protection.
 	for( int i=0; i<size; i++ )	{
-		G.insert( new node( i ) );
+//		G.insert( new Node( i ) );
+		G.insert( i );
 		id_vec.push_back( i );
 	}
 	size_t G_size = G.node_map.size(); // actual size after insertions
@@ -459,12 +419,21 @@ void test_graph_node_perf( int size, double prob, int reps = -1, bool print_out 
 void test_graph_node_class()	{
 
 	graph G;
-	G.insert( new node( 0 ) );
-	G.insert( new node( 1 ) );
-	G.insert( new node( 2 ) );
-	G.insert( new node( 3 ) );
-	G.insert( new node( 4 ) );
-	G.insert( new node( 5 ) );
+#if 0
+	G.insert( new Node( 0 ) );
+	G.insert( new Node( 1 ) );
+	G.insert( new Node( 2 ) );
+	G.insert( new Node( 3 ) );
+	G.insert( new Node( 4 ) );
+	G.insert( new Node( 5 ) );
+#else
+	G.insert( 0 );
+	G.insert( 1 );
+	G.insert( 2 );
+	G.insert( 3 );
+	G.insert( 4 );
+	G.insert( 5 );
+#endif
 
 	G.connect( 0, 5 );
 	G.connect( 1, 2 );
@@ -492,7 +461,8 @@ void test_graph_node_class()	{
 	G.print_paths();
 	cout << "--" << endl;
 
-	G.insert( new node( 1 ) );
+//	G.insert( new Node( 1 ) );
+	G.insert( 1 );
 	G.print_paths();
 	cout << "--" << endl;
 
@@ -613,7 +583,7 @@ p = 1.0;
 
 /////////////////////////////////////////////////////////////
 
-void test_graph_algorithms()	{
+void test_graph_algorithms( void )	{
 
 	test_graph_node_class();
 
