@@ -7,6 +7,7 @@
 #include "cwiz_util.hpp"
 
 #include "algos.h"
+#include "tree.h"
 
 using namespace std;
 
@@ -60,7 +61,7 @@ int test_command( vector <string> & args, cwiz::state_executor <app_state> & sta
 
 	cout << "count: " << state.count << endl;
 
-	return( 0 );
+	return( 1 );
 }
 
 void test_console_executor( void )	{
@@ -95,7 +96,10 @@ int main( int argc, char *argv[] ) {
 	std::printf( "argc == %d\n", argc );
 
 	test_icecream_parlor();
+
 	test_algorithms();
+
+	test_tree_algorithms();
 */
 
 	test_console_executor();

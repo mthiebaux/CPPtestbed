@@ -27,6 +27,8 @@ namespace cwiz {
 			if( cmd == quit_key )	{
 
 				quit( true ); // don't prompt
+
+
 			}
 			else	{
 
