@@ -20,8 +20,189 @@
 
 using namespace std;
 
+// MAXIMUM: double max = std::numeric_limits<double>::max();
 // INFINITY: double inf = std::numeric_limits<double>::infinity();
 
+/////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////
+
+class node	{
+
+	public:
+	node( int id )	{
+		identity = id;
+		component = id;
+//		processing = false;
+		visited = false;
+	}
+
+	void connect( int id, double w = 1.0 )	{
+		edges.push_back( id );
+		weights.push_back( w );
+	}
+
+	int identity;
+	int component;
+//	bool processing;
+	bool visited;
+	vector< int > edges;
+	vector< double > weights;
+};
+
+class edge	{
+
+	public:
+	edge( int src, int dst, double w )	{
+
+	}
+};
+
+class graph	{
+
+	public:
+	graph( int n, bool d = false )	{
+		for( int i=0; i<n; i++ )	{
+			nodes.push_back( new node( i ) );
+		}
+		directed = d;
+	}
+
+	void print_node( int i )	{
+		cout << "node: " << nodes[ i ]->identity << " -> " << nodes[ i ]->component << endl;
+	}
+
+	int root( int i )	{
+
+		while( nodes[ i ]->component != i )	{
+
+			int c = nodes[ i ]->component;
+			nodes[ i ]->component = nodes[ c ]->component; // compress
+
+			i = nodes[ i ]->component;
+		}
+		return( i );
+	}
+
+	void connect( int fr, int to, double w = 1.0 )	{
+
+	// store edge, weight
+
+		nodes[ fr ]->connect( to, w );
+		if( directed == false )	{
+
+			nodes[ to ]->connect( fr, w );
+
+			nodes[ root( fr ) ]->component = root( to );
+		}
+	}
+
+	bool connected_UF( int fr, int to )	{
+
+		return( root( fr ) == root( to ) );
+	}
+
+	bool connected_DFS( int fr, int to )	{
+
+		for( int i=0; i< nodes.size(); i++ )	{
+			nodes[ i ]->visited = false;
+		}
+
+		stack< node* > S;
+		S.push( nodes[ fr ] );
+
+		while( S.empty() == false )	{
+
+			node* node_p = S.top();
+			S.pop();
+
+			for( int i=0; i< node_p->edges.size(); i++ )	{
+
+				int id = node_p->edges[ i ];
+				if( id == to )	{
+
+					return( true );
+				}
+				if( nodes[ id ]->visited == false )	{
+
+					S.push( nodes[ id ] );
+				}
+			}
+			node_p->visited = true;
+		}
+		return( false );
+	}
+
+	bool connected_BFS( int fr, int to )	{
+
+		for( int i=0; i< nodes.size(); i++ )	{
+			nodes[ i ]->visited = false;
+		}
+
+		queue< node* > Q;
+		Q.push( nodes[ fr ] );
+
+		while( Q.empty() == false )	{
+
+			node* node_p = Q.front();
+			Q.pop();
+
+			for( int i=0; i< node_p->edges.size(); i++ )	{
+
+				int id = node_p->edges[ i ];
+				if( id == to )	{
+
+					return( true );
+				}
+				if( nodes[ id ]->visited == false )	{
+
+					Q.push( nodes[ id ] );
+				}
+			}
+			node_p->visited = true;
+		}
+		return( false );
+	}
+
+	vector< node* > nodes;
+	bool directed;
+};
+
+void test_primitive_graph( void )	{
+
+	graph G( 6 );
+
+	G.connect( 0, 1 );
+	G.connect( 2, 3 );
+	G.connect( 2, 4 );
+	G.connect( 2, 5 );
+
+	for( int i=0; i< G.nodes.size(); i++ )	{
+		G.print_node( i );
+	}
+
+#if 1
+	cout << "( 0, 1 ): " << G.connected_UF( 0, 1 ) << endl;
+	cout << "( 0, 2 ): " << G.connected_UF( 0, 2 ) << endl;
+	cout << "( 3, 4 ): " << G.connected_UF( 3, 4 ) << endl;
+	cout << "( 3, 1 ): " << G.connected_UF( 3, 1 ) << endl;
+
+	cout << "( 0, 1 ): " << G.connected_DFS( 0, 1 ) << endl;
+	cout << "( 0, 2 ): " << G.connected_DFS( 0, 2 ) << endl;
+	cout << "( 3, 4 ): " << G.connected_DFS( 3, 4 ) << endl;
+	cout << "( 3, 1 ): " << G.connected_DFS( 3, 1 ) << endl;
+
+	cout << "( 0, 1 ): " << G.connected_BFS( 0, 1 ) << endl;
+	cout << "( 0, 2 ): " << G.connected_BFS( 0, 2 ) << endl;
+	cout << "( 3, 4 ): " << G.connected_BFS( 3, 4 ) << endl;
+	cout << "( 3, 1 ): " << G.connected_BFS( 3, 1 ) << endl;
+#endif
+
+	for( int i=0; i< G.nodes.size(); i++ )	{
+		G.print_node( i );
+	}
+}
+
+/////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////
 
 class Node	{
@@ -82,13 +263,13 @@ class Node	{
 
 /////////////////////////////////////////////////////////////
 
-class CyclicGraph	{
+class Graph	{
 
 	public:
 
-		CyclicGraph()	{
+		Graph()	{
 		}
-		~CyclicGraph()	{
+		~Graph()	{
 		}
 
 #if 1
@@ -102,7 +283,7 @@ class CyclicGraph	{
 		bool insert( Node* new_node_p )	{
 
 			if( node_map.count( new_node_p->identity ) != 0 )	{ // duplicate insertion check/err
-				cout << "CyclicGraph::insert( " << new_node_p->identity << " ) DUPLICATE" << endl;
+				cout << "Graph::insert( " << new_node_p->identity << " ) DUPLICATE" << endl;
 				// delete?
 				return( false );
 			}
@@ -164,6 +345,7 @@ class CyclicGraph	{
 			return( find_root( node_map[ id ].get() ) );
 		}
 #endif
+
 		void reset_visits( void )	{
 			for( auto& np: node_map )	{
 				np.second->visited = false;
@@ -334,7 +516,7 @@ class CyclicGraph	{
 
 void test_graph_node_class()	{
 
-	CyclicGraph G;
+	Graph G;
 
 	G.insert( 0 );
 	G.insert( 1 );
@@ -398,7 +580,7 @@ void test_graph_perf( int size, double prob, int reps = -1, bool print_out = fal
 	cout << "Construction:" << endl;
 	T_part.reset();
 
-	CyclicGraph G;
+	Graph G;
 	vector< int > id_vec; // This is the id protection.
 	for( int i=0; i<size; i++ )	{
 //		G.insert( new Node( i ) );
@@ -525,7 +707,9 @@ int test_graph_perf_scenarios( void ) {
 
 void test_graph_algorithms( void )	{
 
-	test_graph_node_class();
+	test_primitive_graph();
+
+//	test_graph_node_class();
 
 //	test_graph_perf_scenarios();
 }
