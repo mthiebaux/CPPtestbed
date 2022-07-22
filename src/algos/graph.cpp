@@ -45,8 +45,12 @@ class node	{
 	int component;
 //	bool processing;
 	bool visited;
+
 	vector< int > edges;
 	vector< double > weights;
+
+//	forward_list< int > edges;
+//	forward_list< double > weights;
 };
 
 class edge	{
@@ -57,13 +61,28 @@ class edge	{
 	}
 };
 
+/*
+	vector<string> vs;
+	...
+	for (const auto &s : vs)	{
+
+        cout << s << endl;
+    }
+    for (Foo &i: theContainer)	{
+
+	     // Do stuff with i
+	}
+*/
+
 class graph	{
 
 	public:
 	graph( int n, bool d = false )	{
+
 		for( int i=0; i<n; i++ )	{
 			nodes.push_back( new node( i ) );
 		}
+
 		directed = d;
 	}
 
@@ -113,6 +132,7 @@ class graph	{
 		while( S.empty() == false )	{
 
 			node* node_p = S.top();
+			node_p->visited = true;
 			S.pop();
 
 			for( int i=0; i< node_p->edges.size(); i++ )	{
@@ -127,7 +147,6 @@ class graph	{
 					S.push( nodes[ id ] );
 				}
 			}
-			node_p->visited = true;
 		}
 		return( false );
 	}
@@ -144,6 +163,7 @@ class graph	{
 		while( Q.empty() == false )	{
 
 			node* node_p = Q.front();
+			node_p->visited = true;
 			Q.pop();
 
 			for( int i=0; i< node_p->edges.size(); i++ )	{
@@ -158,7 +178,6 @@ class graph	{
 					Q.push( nodes[ id ] );
 				}
 			}
-			node_p->visited = true;
 		}
 		return( false );
 	}
