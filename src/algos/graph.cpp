@@ -175,6 +175,9 @@ class graph	{
 				}
 				if( nodes[ id ]->visited == false )	{
 
+// apparently this needs to be moved here:
+//					node_p->visited = true;
+
 					Q.push( nodes[ id ] );
 				}
 			}
